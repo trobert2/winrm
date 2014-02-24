@@ -14,9 +14,23 @@ type EnvelopeAttrs struct {
     N         string    `xml:"xmlns:n,attr,omitempty"`
 }
 
-type ValueName struct {
-    Value       string  `xml:",innerxml"`
-    Attr        string  `xml:"Name,attr"`
+type ReferenceParameters struct{
+    ResourceURI     string         `xml"w:ResourceURI"`
+    SelectorSet     *SelectorSet   `xml"w:SelectorSet"`
+}
+
+type Selector struct{
+    Value string  `xml:",innerxml"`
+    Attr  string  `xml:"Name,attr"`
+}
+
+type SelectorSet struct{
+    Selector    *Selector      `xml"w:Selector"`
+}
+
+type ResourceCreated struct{
+    Address                 string                 `xml"a:Address"`
+    ReferenceParameters     *ReferenceParameters   `xml"a:ReferenceParameters"`
 }
 
 type OptionSet struct {
@@ -37,9 +51,6 @@ type ReplyAddress struct {
     Address     ValueMustUnderstand  `xml:"a:Address"`
 }
 
-type Selector struct {
-    Set     ValueName  `xml:"Selector"`
-}
 
 type Headers struct {
     To                  string                  `xml:"a:To"`
@@ -52,7 +63,7 @@ type Headers struct {
     OperationTimeout    string                  `xml:"w:OperationTimeout"`
     ResourceURI         *ValueMustUnderstand    `xml:"w:ResourceURI,omitempty"`
     Action              *ValueMustUnderstand    `xml:"a:Action,omitempty"`
-    SelectorSet         *Selector               `xml:"w:SelectorSet,omitempty"`
+    SelectorSet         *SelectorSet            `xml:"w:SelectorSet,omitempty"`
 }
 
 type Command struct {
@@ -85,18 +96,40 @@ type Environment struct {
 }
 
 type Shell struct{
-    InputStreams        string          `xml:"rsp:InputStreams,omitempty"`
-    OutputStreams       string          `xml:"rsp:OutputStreams,omitempty"`
-    WorkingDirectory    string          `xml:"rsp:WorkingDirectory,omitempty"`
-    IdleTimeOut         string          `xml:"rsp:IdleTimeOut,omitempty"`
-    Environment         *Environment    `xml:"rsp:Environment,omitempty"`
+    // xmlnsRsp        string          `xml:"xmlns:rsp,attr,omitempty"`
+    ShellId            string          `xml"rsp:ShellId,omitempty"`
+    ResourceUri        string          `xml"rsp:ResourceUri,omitempty"`
+    Owner              string          `xml"rsp:Owner,omitempty"`
+    ClientIP           string          `xml"rsp:ClientIP,omitempty"`
+    IdleTimeOut        string          `xml"rsp:IdleTimeOut,omitempty"`
+    InputStreams       string          `xml"rsp:InputStreams,omitempty"`
+    OutputStreams      string          `xml"rsp:OutputStreams,omitempty"`
+    ShellRunTime       string          `xml"rsp:ShellRunTime,omitempty"`
+    ShellInactivity    string          `xml"rsp:ShellInactivity,omitempty"`
+    WorkingDirectory   string          `xml:"rsp:WorkingDirectory,omitempty"`
+    Environment        *Environment    `xml:"rsp:Environment,omitempty"`
 }
 
+
 type BodyStruct struct {
-    CommandLine     *Command    `xml:"rsp:CommandLine,omitempty"`
-    Receive         *Receive    `xml:"rsp:Receive,omitempty"`
-    Signal          *Signal     `xml:"rsp:Signal,omitempty"`
-    Shell           *Shell      `xml:"rsp:Shell"`
+    ResourceCreated *ResourceCreated   `xml"x:ResourceCreated"`
+    CommandLine     *Command           `xml:"rsp:CommandLine,omitempty"`
+    Receive         *Receive           `xml:"rsp:Receive,omitempty"`
+    Signal          *Signal            `xml:"rsp:Signal,omitempty"`
+    Shell           *Shell             `xml:"rsp:Shell"`
+}
+
+type ResponseEnvelope struct{
+    XMLName     xml.Name            `xml"s:Envelope,omitempty"`
+    xmlnsS      string              `xml:"xmlns:s,attr,omitempty"`
+    xmlnsA      string              `xml:"xmlns:a,attr,omitempty"`
+    xmlnsX      string              `xml:"xmlns:x,attr,omitempty"`
+    xmlnsW      string              `xml:"xmlns:w,attr,omitempty"`
+    xmlnsRsp    string              `xml:"xmlns:rsp,attr,omitempty"`
+    xmlnsP      string              `xml:"xmlns:p,attr,omitempty"`
+    xmlnsLang   string              `xml:"xmlns:lang,attr,omitempty"`  
+    Headers     *Headers            `xml"s:Header"`
+    BodyStruct  *BodyStruct         `xml"s:Body"`
 }
 
 var Namespaces EnvelopeAttrs = EnvelopeAttrs{

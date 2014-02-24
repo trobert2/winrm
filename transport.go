@@ -7,6 +7,9 @@ import (
     "fmt"
     "bytes"
     "errors"
+    "encoding/xml"
+    "io"
+    "io/ioutil"
 )
 
 type CertificateCredentials struct {
@@ -68,4 +71,11 @@ func (conf *SoapRequest) HttpBasicAuth (data []byte) (*http.Response, error){
 
     resp, err := client.Do(req)
     return resp, err
+}
+
+func GetObjectFromXML(XMLinput io.Reader) (ResponseEnvelope) {    
+    b, _ := ioutil.ReadAll(XMLinput)
+    var response ResponseEnvelope
+    xml.Unmarshal(b, &response)
+    return response
 }
